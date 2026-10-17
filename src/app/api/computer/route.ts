@@ -1,41 +1,49 @@
-// The Computer: its state and the turns this app kept (GET), and its lifecycle
-// (POST create, start or stop).
+// The Computer's lifecycle: create it, start and stop it, pause and resume it, recover
+// a failed runtime, or delete it for good.
 
-import { create, start, state, stop } from "@/server/pine";
-import { body, failure, HttpError, json } from "@/server/http";
-import { read } from "@/server/store";
+import { ForbiddenError } from "@pinesandbox/computer";
+import { body, HttpError, route } from "@/server/http";
+import { create, destroy, overview, recover, requireComputer, start, stop } from "@/server/pine";
+import { updateUser } from "@/server/store";
+import { currentUser } from "@/server/user";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  try {
-    const [computer, data] = await Promise.all([state(), read()]);
-    // The session's revision tells the page when a Start replaced it with a new one.
-    const session = data.session ? { name: data.session.name, revision: data.session.bindingRevision } : null;
-    return json({ computer, session, turns: data.turns });
-  } catch (error) {
-    return failure(error);
+export const POST = route(async (request) => {
+  const user = await currentUser();
+  const input = await body<{ action: string; location?: string; idleTimeoutSeconds?: number }>(request);
+  switch (input.action) {
+    case "create":
+      await create(user, { location: input.location || undefined, idleTimeoutSeconds: input.idleTimeoutSeconds || undefined });
+      break;
+    case "start":
+      await start(user);
+      break;
+    case "recover":
+      await recover(user);
+      break;
+    case "stop":
+      if (!(await stop(user))) throw new HttpError(502, "The Computer didn't confirm it stopped. Try again.");
+      break;
+    // Pause keeps the whole runtime, memory and sessions included; it needs your
+    // project's Pause/Resume feature.
+    case "pause":
+      try {
+        await (await requireComputer(user)).pause();
+      } catch (error) {
+        // The project doesn't have it: stop offering it for this Computer.
+        if (error instanceof ForbiddenError) await updateUser(user, (data) => void (data.computer && (data.computer.pauseUnavailable = true)));
+        throw error;
+      }
+      break;
+    case "resume":
+      await (await requireComputer(user)).resume();
+      break;
+    case "delete":
+      await destroy(user);
+      break;
+    default:
+      throw new HttpError(400, "Choose create, start, stop, pause, resume, recover or delete.");
   }
-}
-
-export async function POST(request: Request) {
-  try {
-    const { action } = await body<{ action: string }>(request);
-    switch (action) {
-      case "create":
-        await create();
-        break;
-      case "start":
-        await start();
-        break;
-      case "stop":
-        if (!(await stop())) throw new HttpError(502, "The Computer didn't confirm it stopped. Try again.");
-        break;
-      default:
-        throw new HttpError(400, "Choose create, start or stop.");
-    }
-    return json({ computer: await state() });
-  } catch (error) {
-    return failure(error);
-  }
-}
+  return { computer: await overview(user) };
+});

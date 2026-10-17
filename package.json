@@ -1,13 +1,13 @@
 {
   "name": "pine-computer-starter",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 127.0.0.1",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -H 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "check": "tsc --noEmit && vitest run"
@@ -15,6 +15,7 @@
   "dependencies": {
     "@pinesandbox/computer": "^0.3.3",
     "@pinesandbox/computer-web": "^0.3.7",
+    "lucide-react": "^1.59.0",
     "next": "^16.4.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
