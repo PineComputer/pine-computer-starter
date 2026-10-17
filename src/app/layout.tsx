@@ -1,18 +1,28 @@
-import type { Metadata } from "next";
-import { Azeret_Mono, Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { brand } from "@/brand";
 import "./globals.css";
 
-const sans = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const mono = Azeret_Mono({ subsets: ["latin"], variable: "--font-mono" });
+const sans = Geist({ subsets: ["latin"], variable: "--font-sans" });
+const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
-  title: "Pine Computer starter",
-  description: "Give a Pine Computer a job, watch it work, take the controls, and keep what it returns.",
+  title: { default: brand.name, template: `%s · ${brand.name}` },
+  description: brand.tagline,
 };
+
+export const viewport: Viewport = { themeColor: "#08090b" };
+
+// Dark unless the person chose otherwise (src/ui/app/Theme.tsx), applied before the
+// first paint so the page never flashes the other theme.
+const THEME = `try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME }} />
+      </head>
       <body>{children}</body>
     </html>
   );
