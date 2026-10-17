@@ -1,0 +1,14 @@
+version: 2
+updates:
+  # Keeps the Pine Computer SDKs, Next.js and React current.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      pine-computer:
+        patterns: ["@pinesandbox/*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
