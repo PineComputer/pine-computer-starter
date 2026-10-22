@@ -4,7 +4,7 @@ export interface ComputerView {
   id: string;
   /** none is never sent; stopped, starting, running, pausing, paused, resuming, stopping, failed… */
   state: string;
-  runtimeId?: string;
+  sandboxId?: string;
   /** Where its browser reaches the internet from: a country code, or "direct". */
   location?: string;
   /** The idle timeout chosen for the next Start. */
@@ -22,7 +22,7 @@ export interface ComputerView {
     stopAt?: string;
     deadline?: string;
   };
-  /** Why the runtime is in a failed state, in its words. */
+  /** Why the sandbox is in a failed state, in its words. */
   problem?: string;
 }
 

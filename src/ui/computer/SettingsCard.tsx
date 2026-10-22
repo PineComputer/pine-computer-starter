@@ -38,7 +38,7 @@ export function SettingsCard({ computer }: { computer: ComputerView }) {
   useEffect(() => setIdle(currentIdle), [currentIdle]);
   useEffect(() => setLocation(currentLocation), [currentLocation]);
 
-  // The choices the runtime and the project allow, and the current value even if it's none of them.
+  // The choices the sandbox and the project allow, and the current value even if it's none of them.
   const choices = useMemo(() => {
     const min = computer.lifetime?.minIdleTimeoutSeconds ?? 60;
     const max = Math.min(computer.lifetime?.maxIdleTimeoutSeconds ?? Infinity, found?.policy.lifecycle?.maxIdleTimeoutSeconds ?? Infinity);

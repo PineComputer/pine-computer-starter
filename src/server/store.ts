@@ -22,7 +22,7 @@ export interface ComputerRecord {
   id: string;
   /** Credentials.serialize(): start this Computer again and decrypt its saved state. */
   credentials: Sealed;
-  /** Binding.serialize(): reach the runtime it's running in. "" while it has none. */
+  /** Binding.serialize(): reach the sandbox it's running in. "" while it has none. */
   binding: Sealed;
   /** The binding's revision. A binding is saved only over an older one. */
   bindingRevision: string;

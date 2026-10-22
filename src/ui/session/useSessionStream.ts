@@ -16,7 +16,7 @@ export interface ControlNow {
  * A session as it happens, from this app's server: the agent's events, who drives, and
  * each handoff saved when a person hands back. A dropped stream resumes from its last
  * event; a new conversation (a new Task) starts the events over. `stream` names the
- * session and its runtime: a Start opens a new stream.
+ * session and its sandbox: a Start opens a new stream.
  */
 export function useSessionStream(session: string, stream: string | null) {
   const [events, setEvents] = useState<WireEvent[]>([]);

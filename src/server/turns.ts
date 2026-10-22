@@ -1,10 +1,10 @@
 // The agent's turns, as this app keeps them. Pine retains a session's turns and events
-// while its runtime lives; the answer and files a person came for belong in your
+// while its sandbox lives; the answer and files a person came for belong in your
 // product, so each finished turn is recorded here and its files copied in. The worker
 // (src/server/worker.ts) does it whether or not a page is open.
 
 import "server-only";
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { AgentTurn, Session } from "@pinesandbox/computer";
 import { DATA_DIR, readUser, updateUser, type TurnFile, type TurnRecord } from "./store";
@@ -78,18 +78,14 @@ async function syncOnce(user: string, session: Session, turnId: string, waitMs: 
   }
 
   // The result names each file by its path in the working directory, which is how the
-  // answer links it. The turn saved a copy of each as an artifact; read that copy (same
-  // name and hash), or the file as it is now if there is none.
+  // answer links it. Copy each one in as the turn left it, streamed straight to disk.
   const result = turn.result;
-  const copies = result.artifacts.length ? await session.listArtifacts({ turnId }) : [];
   const files: TurnFile[] = [];
   for (const ref of result.artifacts) {
-    const copy = copies.find((a) => a.sha256 === ref.sha256 && a.filename === path.basename(ref.relativePath));
-    const bytes = copy ? await session.readArtifact(copy.id) : await session.readFile(ref.relativePath);
     const target = storedFile(user, turnId, ref.relativePath);
     await mkdir(path.dirname(target), { recursive: true });
-    await writeFile(target, bytes);
-    files.push({ path: ref.relativePath, size: bytes.byteLength, contentType: copy?.contentType ?? ref.contentType });
+    await writeFile(target, await session.openFile(ref.relativePath));
+    files.push({ path: ref.relativePath, size: (await stat(target)).size, contentType: ref.contentType });
   }
 
   return updateUser(user, (data) => {

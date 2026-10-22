@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarClock, Download, Paperclip, Sparkles } from "lucide-react";
+import { CalendarClock, Paperclip, Sparkles } from "lucide-react";
 import { brand } from "@/brand";
 import type { TurnView } from "@/shared/api";
 import { clock, cost, duration, kindOf, offset, size } from "../common/format";
@@ -13,7 +13,6 @@ type Peek = (src: string, title: string) => void;
 const FILM = 5;
 
 export interface ThreadProps {
-  session: string;
   /** This session's turns, drawn from its live events. */
   turns: Turn[];
   /** The turns this app kept: they outlive the Computer's session. */
@@ -24,9 +23,9 @@ export interface ThreadProps {
   onLearn?: () => void;
 }
 
-export function Thread({ session, turns, saved, running, onPeek, onLearn }: ThreadProps) {
+export function Thread({ turns, saved, running, onPeek, onLearn }: ThreadProps) {
   const live = new Set(turns.map((turn) => turn.id));
-  // Turns from earlier runtimes (before a Stop) are only in this app's records.
+  // Turns from earlier sandboxes (before a Stop) are only in this app's records.
   const earlier = saved.filter((record) => !live.has(record.turnId));
   const byId = new Map(saved.map((record) => [record.turnId, record]));
   const last = turns[turns.length - 1];
@@ -34,13 +33,12 @@ export function Thread({ session, turns, saved, running, onPeek, onLearn }: Thre
   return (
     <>
       {earlier.map((record) => (
-        <TurnView key={record.turnId} session={session} saved={record} live={false} onPeek={onPeek} />
+        <TurnView key={record.turnId} saved={record} live={false} onPeek={onPeek} />
       ))}
       {earlier.length && turns.length ? <div className="earlier">Now</div> : null}
       {turns.map((turn) => (
         <TurnView
           key={turn.id}
-          session={session}
           turn={turn}
           saved={byId.get(turn.id)}
           live={running && turn === last && !turn.outcome}
@@ -52,7 +50,7 @@ export function Thread({ session, turns, saved, running, onPeek, onLearn }: Thre
   );
 }
 
-function TurnView({ session, turn, saved, live, onPeek, onLearn }: { session: string; turn?: Turn; saved?: TurnView; live: boolean; onPeek: Peek; onLearn?: () => void }) {
+function TurnView({ turn, saved, live, onPeek, onLearn }: { turn?: Turn; saved?: TurnView; live: boolean; onPeek: Peek; onLearn?: () => void }) {
   const turnId = turn?.id ?? saved!.turnId;
   const ask = turn?.ask ?? (saved?.ask ? { kind: saved.kind, text: saved.ask, at: Date.parse(saved.askedAt) } : undefined);
   const startedAt = turn?.startedAt ?? Date.parse(saved!.askedAt);
@@ -108,7 +106,7 @@ function TurnView({ session, turn, saved, live, onPeek, onLearn }: { session: st
           <span className="shine">Getting started</span>
         </p>
       ) : null}
-      <Outcome session={session} turn={turn} saved={saved} fileUrl={fileUrl} onLearn={onLearn} />
+      <Outcome turn={turn} saved={saved} fileUrl={fileUrl} onLearn={onLearn} />
     </>
   );
 }
@@ -233,7 +231,7 @@ function Thumb({ src, title, onPeek }: { src: string; title: string; onPeek: Pee
   );
 }
 
-function Outcome({ session, turn, saved, fileUrl, onLearn }: { session: string; turn?: Turn; saved?: TurnView; fileUrl: (path: string) => string | null; onLearn?: () => void }) {
+function Outcome({ turn, saved, fileUrl, onLearn }: { turn?: Turn; saved?: TurnView; fileUrl: (path: string) => string | null; onLearn?: () => void }) {
   const reason = turn?.outcome?.reason ?? (saved && saved.state !== "running" && saved.state !== "canceling" ? saved.state : undefined);
   if (!reason) return null;
   const summary = turn?.outcome?.summary ?? saved?.summary ?? "";
@@ -293,11 +291,6 @@ function Outcome({ session, turn, saved, fileUrl, onLearn }: { session: string; 
         <span className={`badge ${completed ? "accent" : reason === "failed" ? "bad" : ""}`}>{word}</span>
         <span>{[ms ? duration(ms) : null, price].filter(Boolean).join(" · ")}</span>
         <span className="actions-end">
-          {returned.length > 1 && turn ? (
-            <a className="btn ghost sm" href={`/api/sessions/${encodeURIComponent(session)}/artifacts?turn=${encodeURIComponent(turn.id)}`} title="Download every file as a zip">
-              <Download /> Zip
-            </a>
-          ) : null}
           {onLearn ? (
             <button className="btn ghost sm" onClick={onLearn} title="Turn this run into a skill the agent can reuse">
               <Sparkles /> Save as skill

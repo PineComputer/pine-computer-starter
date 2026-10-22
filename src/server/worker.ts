@@ -83,7 +83,7 @@ async function follow(user: string, name: string, turnId: string): Promise<void>
       publish(user, { type: "notice", tone: "info", text: `${record.kind === "schedule" ? "A scheduled task" : "A task"} needs your answer`, href: `/s/${name}` });
     }
   } catch (error) {
-    // The runtime went away (it idled out, or stopped elsewhere): its turns end with it.
+    // The sandbox went away (it idled out, or stopped elsewhere): its turns end with it.
     if ((await overview(user).catch(() => null))?.state === "stopped") await released(user);
     else console.error("worker: following a turn:", error);
   }

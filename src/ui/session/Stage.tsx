@@ -182,7 +182,7 @@ export const Stage = forwardRef<HTMLInputElement, StageProps>(function Stage(pro
               {state === "paused"
                 ? "Resume to pick up exactly where it was: the same pages, the same session."
                 : state === "stopped"
-                  ? "Start restores its sign-ins, cookies and skills into a fresh runtime. The answers and files on the left are kept by this app."
+                  ? "Start restores its sign-ins, cookies and skills into a fresh sandbox. The answers and files on the left are kept by this app."
                   : state === "failed"
                     ? "Recover starts it again from its saved state."
                     : ""}

@@ -1,5 +1,5 @@
 // The countries a Computer's browser can reach the internet from, and the project's
-// limits for new runtimes.
+// limits for new sandboxes.
 
 import { route } from "@/server/http";
 import { client } from "@/server/pine";

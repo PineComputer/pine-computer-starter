@@ -20,10 +20,10 @@ const SUBLINE: Record<string, string> = {
   running: "Its browser, shell and agents are up.",
   stopped: "Nothing is running. Its sign-ins, cookies and skills are saved for the next Start.",
   paused: "Everything is held in memory, open pages and sessions included.",
-  failed: "The runtime failed. Recover releases it and starts again from the last saved state.",
+  failed: "The sandbox failed. Recover releases it and starts again from the last saved state.",
 };
 
-export function RuntimeCard({ computer }: { computer: ComputerView }) {
+export function SandboxCard({ computer }: { computer: ComputerView }) {
   const { busy, lifecycle } = useApp();
   const now = useNow();
   const state = (busy && BUSY_STATE[busy]) || computer.state;
@@ -33,8 +33,8 @@ export function RuntimeCard({ computer }: { computer: ComputerView }) {
   const lifetime = computer.lifetime;
 
   return (
-    <section className="card cv-runtime" aria-label="Runtime">
-      <div className="cv-runtime-top" data-tone={tone}>
+    <section className="card cv-sandbox" aria-label="Sandbox">
+      <div className="cv-sandbox-top" data-tone={tone}>
         <div className="cv-state">
           <div className="cv-state-word">
             <span className="dot" data-tone={tone === "none" ? undefined : tone} />
@@ -100,9 +100,9 @@ export function RuntimeCard({ computer }: { computer: ComputerView }) {
           </span>
           <CopyButton text={computer.id} />
         </Fact>
-        <Fact label="Runtime">
-          <span className="mono" title={computer.runtimeId}>
-            {computer.runtimeId ?? "None while stopped"}
+        <Fact label="Sandbox">
+          <span className="mono" title={computer.sandboxId}>
+            {computer.sandboxId ?? "None while stopped"}
           </span>
         </Fact>
         <Fact label="Started">{computer.createdAt ? relative(Date.parse(computer.createdAt), now) : "—"}</Fact>
@@ -133,7 +133,7 @@ export function RuntimeCard({ computer }: { computer: ComputerView }) {
         <p className="cv-note">
           <Save />
           <span>
-            <b>Stop</b> saves sign-ins, cookies and learned skills, then frees the compute. <b>Start</b> restores them into a fresh runtime.
+            <b>Stop</b> saves sign-ins, cookies and learned skills, then frees the compute. <b>Start</b> restores them into a fresh sandbox.
           </span>
         </p>
       </div>
