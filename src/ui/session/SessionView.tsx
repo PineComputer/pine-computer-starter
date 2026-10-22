@@ -51,7 +51,7 @@ export function SessionView({ name }: { name: string }) {
   const session = app?.sessions.find((s) => s.name === name);
   const computer = app?.computer;
   const open = Boolean(session?.open);
-  const stream = open && computer?.runtimeId ? `${name}:${computer.runtimeId}` : null;
+  const stream = open && computer?.sandboxId ? `${name}:${computer.sandboxId}` : null;
   const { events, control, handoffs, problem: streamProblem, controlCursor } = useSessionStream(name, stream);
   const turns = useMemo(() => fold(events), [events]);
   const saved = useMemo(() => app?.turns.filter((t) => t.session === name) ?? [], [app?.turns, name]);
@@ -284,7 +284,6 @@ export function SessionView({ name }: { name: string }) {
             </div>
           ) : (
             <Thread
-              session={name}
               turns={turns}
               saved={saved}
               running={open}

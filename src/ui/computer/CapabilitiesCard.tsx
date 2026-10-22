@@ -12,18 +12,18 @@ function amount(value: number, unit: string): string {
   return value.toLocaleString();
 }
 
-/** What this runtime can do and the limits it applies, as the Computer reports them. */
+/** What this sandbox can do and the limits it applies, as the Computer reports them. */
 export function CapabilitiesCard({ computer }: { computer: ComputerView }) {
   const running = computer.state === "running";
   const [found, setFound] = useState<Capabilities | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
 
-  // A new runtime may serve different features: ask again after each Start.
+  // A new sandbox may serve different features: ask again after each Start.
   useEffect(() => {
     if (!running) return;
     setProblem(null);
     call<Capabilities>("/api/computer/capabilities").then(setFound, (error) => setProblem(errorText(error)));
-  }, [running, computer.runtimeId]);
+  }, [running, computer.sandboxId]);
 
   return (
     <section className="card">
@@ -38,7 +38,7 @@ export function CapabilitiesCard({ computer }: { computer: ComputerView }) {
       </div>
       <div className="card-body">
         {!running ? (
-          <p className="empty-note">Start the Computer to see what its runtime serves.</p>
+          <p className="empty-note">Start the Computer to see what its sandbox serves.</p>
         ) : problem ? (
           <p className="problem">{problem}</p>
         ) : !found ? (

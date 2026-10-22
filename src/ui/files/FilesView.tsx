@@ -185,9 +185,6 @@ function WorkDirectory({ session }: { session: SessionView }) {
           <button className="btn ghost icon sm" aria-label="Refresh" title="Refresh" disabled={loading} onClick={() => void load()}>
             <RefreshCw />
           </button>
-          <a className="btn sm" href={`${base}/artifacts`} download title="Every file this session's tasks returned">
-            <Download /> All returned (.zip)
-          </a>
         </div>
       </div>
 

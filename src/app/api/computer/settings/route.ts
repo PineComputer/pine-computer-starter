@@ -27,7 +27,7 @@ export const PATCH = route(async (request) => {
       await found.setIdleTimeout(idleTimeoutSeconds);
       appliedNow = true;
     } catch (error) {
-      // Refused for this runtime (above what it was admitted with, say): it applies from
+      // Refused for this sandbox (above what it was admitted with, say): it applies from
       // the next Start. The lifecycle API answers with a LifecycleError.
       if (!((error instanceof LifecycleError || error instanceof ApiError) && error.status < 500)) throw error;
     }

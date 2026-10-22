@@ -5,7 +5,7 @@ import {
   LifecycleError,
   PineError,
   ProblemType,
-  RuntimeRetainedError,
+  SandboxRetainedError,
 } from "@pinesandbox/computer";
 
 export class HttpError extends Error {
@@ -30,7 +30,7 @@ const PROBLEM_WORDS: Record<string, [number, string]> = {
 /** A failure the page can show as is. Unexpected ones are logged here and stay here. */
 export function failure(error: unknown): Response {
   if (error instanceof HttpError) return json({ error: error.message }, error.status);
-  if (error instanceof RuntimeRetainedError) return json({ error: "The Computer is still running or paused. Stop or resume it first." }, 409);
+  if (error instanceof SandboxRetainedError) return json({ error: "The Computer is still running or paused. Stop or resume it first." }, 409);
   if (error instanceof CapacityExceededError) return json({ error: "Your project is running as many Computers as it may." }, 429);
   if (error instanceof CreateRateLimitedError) return json({ error: "Too many Computers started this minute. Try again shortly." }, 429);
   if (error instanceof LifecycleError) return json({ error: words(error.message), requestId: error.requestId }, error.status >= 500 ? 502 : error.status);

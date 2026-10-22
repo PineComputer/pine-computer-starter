@@ -34,7 +34,7 @@ export function PasskeysCard({ computer }: { computer: ComputerView }) {
   const pushed = ceremonies.map((c) => c.id).join();
   useEffect(() => {
     if (running) void load();
-  }, [running, computer.runtimeId, pushed, load]);
+  }, [running, computer.sandboxId, pushed, load]);
 
   const waiting = running ? pending : [];
 

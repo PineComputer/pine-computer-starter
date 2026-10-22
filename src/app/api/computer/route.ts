@@ -1,5 +1,5 @@
 // The Computer's lifecycle: create it, start and stop it, pause and resume it, recover
-// a failed runtime, or delete it for good.
+// a failed sandbox, or delete it for good.
 
 import { ForbiddenError } from "@pinesandbox/computer";
 import { body, HttpError, route } from "@/server/http";
@@ -25,7 +25,7 @@ export const POST = route(async (request) => {
     case "stop":
       if (!(await stop(user))) throw new HttpError(502, "The Computer didn't confirm it stopped. Try again.");
       break;
-    // Pause keeps the whole runtime, memory and sessions included; it needs your
+    // Pause keeps the whole sandbox, memory and sessions included; it needs your
     // project's Pause/Resume feature.
     case "pause":
       try {

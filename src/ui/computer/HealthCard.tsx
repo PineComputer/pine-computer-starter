@@ -15,7 +15,7 @@ interface Diagnostic {
 const DONE = new Set(["completed", "failed"]);
 
 /**
- * Asks Pine to look the Computer over: a read-only check of its runtime (and one
+ * Asks Pine to look the Computer over: a read-only check of its sandbox (and one
  * session's recorded work) that comes back with what's wrong and what to do about it.
  */
 export function HealthCard({ sessions }: { sessions: SessionView[] }) {

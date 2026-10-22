@@ -7,11 +7,11 @@ import { CapabilitiesCard } from "./CapabilitiesCard";
 import { DangerCard } from "./DangerCard";
 import { HealthCard } from "./HealthCard";
 import { PasskeysCard } from "./PasskeysCard";
-import { RuntimeCard } from "./RuntimeCard";
+import { SandboxCard } from "./SandboxCard";
 import { SettingsCard } from "./SettingsCard";
 import "./computer.css";
 
-/** The Computer itself: its runtime and lifecycle, where it browses from, what it can do, the passkeys it keeps. */
+/** The Computer itself: its sandbox and lifecycle, where it browses from, what it can do, the passkeys it keeps. */
 export function ComputerView() {
   const { app } = useApp();
   const computer = app?.computer;
@@ -22,7 +22,7 @@ export function ComputerView() {
         <header className="page-head">
           <div>
             <h1>Computer</h1>
-            <p>Its runtime and lifecycle, where its browser reaches the internet from, what it can do, and the passkeys it keeps for sites.</p>
+            <p>Its sandbox and lifecycle, where its browser reaches the internet from, what it can do, and the passkeys it keeps for sites.</p>
           </div>
         </header>
 
@@ -39,7 +39,7 @@ export function ComputerView() {
           </div>
         ) : (
           <div className="cv-stack">
-            <RuntimeCard computer={computer} />
+            <SandboxCard computer={computer} />
             <div className="grid-2">
               <SettingsCard computer={computer} />
               <HealthCard sessions={app.sessions} />

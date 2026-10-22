@@ -1,4 +1,4 @@
-// Asks Pine to check the Computer: a read-only look at its runtime (and a session's
+// Asks Pine to check the Computer: a read-only look at its sandbox (and a session's
 // recorded work) that comes back with what's wrong and what to do.
 
 import { body, HttpError, route } from "@/server/http";

@@ -20,7 +20,7 @@ export function DangerCard() {
       <div className="card-body">
         <div className="cv-danger-row">
           <p>
-            Delete the Computer for good: its runtime, saved state, sign-ins, passkeys and learned skills go, and its id is never used again. This app keeps
+            Delete the Computer for good: its sandbox, saved state, sign-ins, passkeys and learned skills go, and its id is never used again. This app keeps
             its task history and the files it kept.
           </p>
           <button className="btn danger" aria-busy={busy === "delete"} disabled={busy !== null} onClick={() => setAsking(true)}>
@@ -31,7 +31,7 @@ export function DangerCard() {
       {asking ? (
         <Confirm
           title="Delete this Computer for good?"
-          body="There's no undo. Its runtime stops at once, and its saved state, sign-ins, passkeys and skills are deleted. Your task history and kept files stay in this app."
+          body="There's no undo. Its sandbox stops at once, and its saved state, sign-ins, passkeys and skills are deleted. Your task history and kept files stay in this app."
           action="Delete for good"
           word="delete"
           onClose={() => setAsking(false)}

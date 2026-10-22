@@ -22,13 +22,13 @@ SDK, [`@pinesandbox/computer-web`](https://www.npmjs.com/package/@pinesandbox/co
 | **The screen, and the controls** | See the desktop, open pages in tabs, take the controls and hand back | `delegateDesktop` into `<PineDesktop>`, `takeControl` / `releaseControl`, `listTabs` / `createTab` | [`src/ui/session/Stage.tsx`](src/ui/session/Stage.tsx) |
 | **Skills** | Save a good run as a skill, or show it once and teach it; read the draft, activate it, refine it | `startLearn`, `startTeach` with the handoff, `startRefine`, `authorEvents`, `skills.drafts/activate` | [`src/ui/session/Author.tsx`](src/ui/session/Author.tsx), [`src/ui/skills`](src/ui/skills) |
 | **Vault** | Keep sign-ins and keys the agent uses as `$NAME` without ever seeing them | `secrets` on every run, answer and steer, sealed at rest | [`src/server/vault.ts`](src/server/vault.ts) |
-| **Files in and out** | Attach files to a task, browse the work directory, download a turn's files or all of them | `writeFile` into `attachments/`, `listFiles`, `readFile`, `zipArtifacts`, `readArtifact` | [`src/ui/files`](src/ui/files), [`src/server/turns.ts`](src/server/turns.ts) |
+| **Files in and out** | Attach files to a task, browse and download the work directory, download the files a turn returned | `writeFile` into `attachments/`, `listFiles`, `openFile` (each file a turn's `result.artifacts` names, streamed) | [`src/ui/files`](src/ui/files), [`src/server/turns.ts`](src/server/turns.ts) |
 | **Schedules** | Run a task every hour, or each weekday at nine, with no page open | A worker in the server process starts the Computer when it must; each slot's run key runs it once | [`src/server/schedules.ts`](src/server/schedules.ts), [`src/server/worker.ts`](src/server/worker.ts) |
 | **History that outlives the Computer** | Find every answer and file after Stop | The worker follows each turn with `agent.wait` and copies its files in | [`src/server/turns.ts`](src/server/turns.ts) |
 | **Shell** | Run commands beside the agent and watch the output stream | `session.exec` with `onEvent` | [`…/exec`](src/app/api/sessions/[session]/exec/route.ts) |
 | **Your own agent** | Let your own model drive the session (Claude, with `ANTHROPIC_API_KEY`) | `drive.computerUse` and `screenshot`: the Computer is the hands and eyes | [`src/server/drive.ts`](src/server/drive.ts) |
 | **Passkeys** | Approve a site's new passkey from a prompt; the Computer keeps it | `pendingPasskeyCeremonies`, `approvePasskeyCeremony`, `listPasskeys` | [`src/ui/app/Toasts.tsx`](src/ui/app/Toasts.tsx), [`src/ui/computer`](src/ui/computer) |
-| **The Computer** | Choose its country and idle timeout; Pause, Resume, Stop, Start, Recover or Delete it; run a health check | `availableLocations`, `setIdleTimeout`, `runtimeDetails`, lifecycle calls, `createDiagnostic` | [`src/ui/computer`](src/ui/computer), [`api/computer`](src/app/api/computer/route.ts) |
+| **The Computer** | Choose its country and idle timeout; Pause, Resume, Stop, Start, Recover or Delete it; run a health check | `availableLocations`, `setIdleTimeout`, `sandboxDetails`, lifecycle calls, `createDiagnostic` | [`src/ui/computer`](src/ui/computer), [`api/computer`](src/app/api/computer/route.ts) |
 
 Everything changes live: the server pushes what happened (a task finished, a scheduled
 task needs an answer, a site wants a passkey) and every view updates. Press <kbd>⌘K</kbd>
@@ -91,7 +91,7 @@ Composer        ── task ───────▶ POST /api/sessions/:s/runs 
   once (a job queue, or a lock), and keep the event streams on a long-lived server.
   Serverless hosts cut long requests short and don't keep `.data/`.
 - **Handle the errors you can act on**: `RunUnconfirmedError` (send the run again with the
-  same key), `RuntimeRetainedError` (it's still running or paused), and
+  same key), `SandboxRetainedError` (it's still running or paused), and
   `isRetryable(error)` for the rest. See the SDK's README.
 
 ## Develop

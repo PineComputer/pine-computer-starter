@@ -34,7 +34,7 @@ function handle(saved: ComputerRecord | undefined): Computer | null {
   return client().reconnectComputer(Credentials.parse(open(saved.credentials)), Binding.parse(open(saved.binding)));
 }
 
-/** The user's Computer, ready to call, or null before it exists or while it has no runtime. */
+/** The user's Computer, ready to call, or null before it exists or while it has no sandbox. */
 export async function computer(user: string): Promise<Computer | null> {
   return handle((await readUser(user)).computer);
 }
@@ -75,12 +75,12 @@ export async function overview(user: string): Promise<ComputerView | null> {
   const found = handle(saved);
   if (!found) return view;
   try {
-    const details = await found.runtimeDetails();
+    const details = await found.sandboxDetails();
     const lifetime = details.lifetime;
     return {
       ...view,
       state: details.state.toLowerCase(),
-      runtimeId: details.runtimeId,
+      sandboxId: details.sandboxId,
       createdAt: details.createdAt?.toISOString(),
       expiresAt: details.expiresAt?.toISOString(),
       lifetime: lifetime && {
@@ -91,10 +91,10 @@ export async function overview(user: string): Promise<ComputerView | null> {
         stopAt: lifetime.stopAt?.toISOString(),
         deadline: lifetime.deadline?.toISOString(),
       },
-      problem: details.state.toLowerCase() === "failed" ? details.message || "The runtime failed." : undefined,
+      problem: details.state.toLowerCase() === "failed" ? details.message || "The sandbox failed." : undefined,
     };
   } catch (error) {
-    // The runtime record is gone: it stopped (idle, or from elsewhere). Start restores it.
+    // The sandbox record is gone: it stopped (idle, or from elsewhere). Start restores it.
     if (error instanceof NotFoundError) return view;
     throw error;
   }
@@ -125,14 +125,14 @@ export async function start(user: string): Promise<void> {
   await attached(user, await client().startComputer(Credentials.parse(open(saved.credentials)), attachOptions(saved)));
 }
 
-/** Gives up on a failed runtime and starts again from saved state. */
+/** Gives up on a failed sandbox and starts again from saved state. */
 export async function recover(user: string): Promise<void> {
   const saved = (await readUser(user)).computer;
   if (!saved) throw new HttpError(409, "Create a Computer first.");
   await attached(user, await client().recoverComputer(Credentials.parse(open(saved.credentials)), attachOptions(saved)));
 }
 
-/** Saves what the Computer can keep, then releases its runtime and sessions. */
+/** Saves what the Computer can keep, then releases its sandbox and sessions. */
 export async function stop(user: string): Promise<boolean> {
   const found = await computer(user);
   if (!found) return true;
@@ -141,10 +141,10 @@ export async function stop(user: string): Promise<boolean> {
   return stopped;
 }
 
-/** The turns a runtime takes with it: a question can't be answered once it's gone. */
+/** The turns a sandbox takes with it: a question can't be answered once it's gone. */
 const ENDED_WITH_RUNTIME = new Set(["running", "canceling", "needs_input"]);
 
-/** Deletes the Computer for good: its runtime, saved state, sign-ins and skills. The app's history stays. */
+/** Deletes the Computer for good: its sandbox, saved state, sign-ins and skills. The app's history stays. */
 export async function destroy(user: string): Promise<void> {
   const saved = (await readUser(user)).computer;
   if (!saved) return;
@@ -156,7 +156,7 @@ export async function destroy(user: string): Promise<void> {
   });
 }
 
-/** The runtime is gone: its sessions closed, and a turn still running, or still asking, ended with it. */
+/** The sandbox is gone: its sessions closed, and a turn still running, or still asking, ended with it. */
 export async function released(user: string): Promise<void> {
   await updateUser(user, (data) => {
     if (data.computer) data.computer.binding = "";
