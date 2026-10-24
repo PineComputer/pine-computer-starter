@@ -15,7 +15,7 @@
   "dependencies": {
     "@pinesandbox/computer": "^0.3.4",
     "@pinesandbox/computer-web": "^0.3.8",
-    "lucide-react": "^1.59.0",
+    "lucide-react": "^1.61.0",
     "next": "^16.4.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
